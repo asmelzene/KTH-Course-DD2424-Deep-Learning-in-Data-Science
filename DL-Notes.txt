@@ -1,0 +1,18 @@
+Material for the assignment:
+
+Assignment1.pdfPreview the document  - instructions for the assignment
+CiFAR-10 webpage  (https://www.cs.toronto.edu/~kriz/cifar.html)- dataset used for this assignment
+
+montage.mPreview the document  - matlab function to display multiple images
+
+ComputeGradsNum.mPreview the document - matlab function to compute the gradients numerically (finite difference method)
+
+ComputeGradsNumSlow.mPreview the document  - matlab function to compute the gradients numerically (centered difference method)
+
+The "theory" you will need to complete this assignment will be presented in Lectures 2-3. So if you have encountered this material before it is probably best to wait until then to complete the assignment.
+----------------------
+assignment-1:
+https://www.cs.toronto.edu/~kriz/cifar.html 
+They have shown how to access the images in python .... you can use matplotlibs imshow function on top of their code to display the images (at least that's what I did).
+---------
+in the discussions part, search for "assignment"
