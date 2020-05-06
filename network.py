@@ -26,6 +26,33 @@ class Network:
         [self.train_X, self.train_Y, self.train_y] = cifar.load_batch_a1(filePathList[0])
         [self.validation_X, self.validation_Y, self.validation_y] = cifar.load_batch_a1(filePathList[1])
         [self.test_X, self.test_Y, self.test_y] = cifar.load_batch_a1(filePathList[2])
+        
+    def ReadData_Exercise4(self, cifar, filePathList):
+        # Top-level: Read in and store the training, validation and test data.
+        # cifar_batch = CIFAR_IMAGES()
+        # 'filePathList[0] = ['Dataset/data_batch_1', 'Dataset/data_batch_2', 'Dataset/data_batch_3', 'Dataset/data_batch_4', 'Dataset/data_batch_5']
+        list_X_all = []
+        list_Y_all = []
+        list_y_all = []
+
+        for file in filePathList[0]:
+            [temp_train_X, temp_train_Y, temp_train_y] = cifar.load_batch_a1(file)
+            list_X_all.append(temp_train_X)
+            list_Y_all.append(temp_train_Y)
+            list_y_all.append(temp_train_y)   
+
+        self.X_all = list_X_all[0]
+        self.Y_all = list_Y_all[0]
+        self.y_all = list_y_all[0]
+        for i in range(len(list_X_all)): 
+            if i != 0:
+                self.X_all = np.hstack((self.X_all, list_X_all[i]))
+                self.Y_all = np.hstack((self.Y_all, list_Y_all[i]))
+                self.y_all = np.append(self.y_all, list_y_all[i])
+            
+        [self.train_X, self.train_Y, self.train_y] = [self.X_all[:, :45000], self.Y_all[:, :45000], self.y_all[:45000]]
+        [self.validation_X, self.validation_Y, self.validation_y] = [self.X_all[:, 45000:], self.Y_all[:, 45000:], self.y_all[45000:]]
+        [self.test_X, self.test_Y, self.test_y] = cifar.load_batch_a1(filePathList[1])
     
     def MeanStd_Train_X(self, train_X):
         # Top-level: Compute the mean and standard deviation vector for the training data and then normalize the 
@@ -43,6 +70,17 @@ class Network:
         # http://cs231n.github.io/python-numpy-tutorial/#numpy-broadcasting
         normalizedInputData = (inputData - trainX_Broadcast_MeanStd[0].transpose())\
         /trainX_Broadcast_MeanStd[1].transpose()
+        return normalizedInputData
+    
+    def NormalizeData_Broadcast(self, inputData, trainX):
+        # http://cs231n.github.io/python-numpy-tutorial/#numpy-broadcasting
+        mean_train_X = self.train_X.mean(axis=1)
+        mean_train_X_broadcast = np.tile(mean_train_X, (inputData.shape[1], 1))
+        
+        std_train_X = self.train_X.std(axis=1)
+        std_train_X_broadcast = np.tile(std_train_X, (inputData.shape[1], 1))
+        
+        normalizedInputData = (inputData - mean_train_X_broadcast.transpose())/std_train_X_broadcast.transpose()
         return normalizedInputData
         
     def Initialize_W_b_ex(self, d, m, K, sigma1, sigma2):

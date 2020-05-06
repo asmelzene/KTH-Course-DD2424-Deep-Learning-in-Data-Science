@@ -47,7 +47,6 @@ class CIFAR_IMAGES:
         #return [X, Y, y]
         return [np.divide(dictBatch[b'data'], 255).transpose(), Y_one_hot_labels.transpose(), np.array(dictBatch[b'labels'])]
     
-    
     # dictBatchData is the dictionary having all info related to the images in the batch
     # dictBatch[b'data']=a numpy array with  having all data (b'data') information from the loaded batch
     # e.g. for the batch1, dictBatchData=(10000, 3072) matrix (row:image, Column:HxWxRGB binary))
