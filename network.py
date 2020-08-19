@@ -54,6 +54,7 @@ class Network:
         [self.validation_X, self.validation_Y, self.validation_y] = [self.X_all[:, 45000:], self.Y_all[:, 45000:], self.y_all[45000:]]
         [self.test_X, self.test_Y, self.test_y] = cifar.load_batch_a1(filePathList[1])
     
+    # USED
     def MeanStd_Train_X(self, train_X):
         # Top-level: Compute the mean and standard deviation vector for the training data and then normalize the 
         # training, validation and test data w.r.t. these mean and standard deviation vectors.
@@ -72,6 +73,17 @@ class Network:
         /trainX_Broadcast_MeanStd[1].transpose()
         return normalizedInputData
     
+    def NormalizeData_Per_DataSet(self, inputData):
+        mean_X = inputData.mean(axis=1)
+        mean_X_broadcast = np.tile(mean_X, (inputData.shape[1], 1))
+        std_X = inputData.std(axis=1)
+        
+        std_X_broadcast = np.tile(std_X, (inputData.shape[1], 1))
+        
+        # http://cs231n.github.io/python-numpy-tutorial/#numpy-broadcasting
+        normalizedInputData = (inputData - mean_X_broadcast.transpose())/std_X_broadcast.transpose()
+        return normalizedInputData
+    
     def NormalizeData_Broadcast(self, inputData, trainX):
         # http://cs231n.github.io/python-numpy-tutorial/#numpy-broadcasting
         mean_train_X = self.train_X.mean(axis=1)
@@ -82,24 +94,6 @@ class Network:
         
         normalizedInputData = (inputData - mean_train_X_broadcast.transpose())/std_train_X_broadcast.transpose()
         return normalizedInputData
-        
-    def Initialize_W_b_ex(self, d, m, K, sigma1, sigma2):
-        # Top-Level: After reading in and pre-processing the data, you can initialize the parameters of the model 
-        # W and b as you now know what size they should be. W has size Kxd and b is Kx1. Initialize each entry to have 
-        # Gaussian random values with zero mean and standard deviation .01. 
-        # You should use the Matlab function randn to create this data.
-        mu = 0
-        
-        #sigma1 = int(np.sqrt(d))
-        #sigma2 = int(np.sqrt(m))
-        
-        W1 = np.random.normal(mu, sigma1, (m, d))
-        W2 = np.random.normal(mu, sigma2, (K, m))
-        
-        b1 = np.zeros((m, 1))
-        b2 = np.zeros((K, 1))
-        
-        return (W1, W2, b1, b2)
     
     def Initialize_W_b(self, initial_sizes, sigma1, sigma2):
         # Top-Level: After reading in and pre-processing the data, you can initialize the parameters of the model 
@@ -147,6 +141,35 @@ class Network:
         
         return P, H
     
+    def EvaluationClassifier_loop(self, layers, X, W, b):
+        # W = [W1, W2]
+        # X = each column of X corresponds to an image and it has size (d x N) >> here N will be smaller since 
+        # it will be selected as subset of images n=100 can be selected
+        # b = [b1, b2]
+        # layers = [linearLayer1, reluLayer, linearLayer2, softmaxLayer]
+        linear_layer = 0
+        inputData = X
+        
+        results = []
+        
+        #layer.
+        for lyr in layers:
+            if type(lyr) == layer.Linear:
+                inputData = lyr.Forward(inputData, W[linear_layer], b[linear_layer])
+                linear_layer += 1
+            elif type(lyr) == layer.ReLU:
+                inputData = lyr.Forward(inputData)
+                results.append(inputData)
+            elif type(lyr) == layer.Softmax:
+                inputData = lyr.Forward(inputData)
+                results.append(inputData)
+
+        #print('P = {}'.format(P.shape))
+        H = results[0]
+        P = results[1]
+        
+        return P, H
+    
     # layers = [linearLayer1, reluLayer, linearLayer2, softmaxLayer]
     def Cost_ex(self, layers, X, Y, W, b, lambda_cost):
         cost_sum = 0
@@ -191,6 +214,30 @@ class Network:
         return cost_sum
     
     def Cost(self, X, Y, W, b, lambda_cost):
+        # for k-layer NN FORWARD pass & COST calculations: Lecture4-Pg.33 (46)
+        cost_sum = 0
+        
+        b1_broadcast = np.tile(b[0], (1, X.shape[1]))
+        S1 = np.dot(W[0], X) + b1_broadcast
+        
+        H = S1 * (S1 > 0)
+        
+        b2_broadcast = np.tile(b[1], (1, H.shape[1]))
+        S = np.dot(W[1], H) + b2_broadcast
+        
+        # Softmax
+        exp_s = np.exp(S)
+        P = exp_s / np.sum(exp_s, axis=0)
+        
+        cross_entropy_loss = -np.log(np.dot(Y.transpose(), P))
+        sum_cross_entropy_loss = np.trace(cross_entropy_loss)
+        N = Y.shape[1]
+        
+        total_cost = sum_cross_entropy_loss/N + lambda_cost*(np.power(W[0], 2).sum() + np.power(W[1], 2).sum())
+        
+        return total_cost
+    
+    def Cost_loop(self, X, Y, W, b, lambda_cost):
         cost_sum = 0
         
         b1_broadcast = np.tile(b[0], (1, X.shape[1]))

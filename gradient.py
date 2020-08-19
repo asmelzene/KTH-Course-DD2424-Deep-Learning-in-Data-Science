@@ -43,6 +43,8 @@ class Gradient:
         # Also instead of providing Y, now we can provide N only
         # N = Y.shape[1]  # number of images in data (X)
         
+        # for k-layer NN aggregated backward pass calculations: Lecture4-Pg.34(47) to 36(49)
+        
         dL_dW = np.divide(np.dot(G, X.transpose()), N)
         dL_dB = np.divide(np.sum(G, axis=1), N)
 

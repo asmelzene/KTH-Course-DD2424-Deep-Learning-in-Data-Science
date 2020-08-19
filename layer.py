@@ -32,7 +32,7 @@ class Linear:
     def ComputeGradients(self, Y, P, X, lambda_cost, W):
         # Y = ground_truth_labels_matrix
         # P = probabilities
-        # X = image data
+            # X = image data
         G = -np.subtract(Y, P)
         N = Y.shape[1]  # number of images in data (X)
 
@@ -56,8 +56,7 @@ class Linear:
         else:
             # means first layer
             (grad_W, grad_b) = self.gradLinear.ComputeGradients_Linear_FirstLayer(N, G, X, lambda_cost, W1)
-            #(grad_W, grad_b) = ComputeGradients_Linear_FirstLayer(N, G, X_batch, lambda_cost, W1)
-        
+            #(grad_W, grad_b) = ComputeGradients_Linear_FirstLayer(N, G, X_batch, lambda_cost, W1)      
         
         Wstar = W - eta * grad_W
         bstar_m = b - eta * grad_b
