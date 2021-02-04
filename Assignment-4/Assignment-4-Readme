@@ -1,0 +1,13 @@
+In this assignment you will train an RNN to synthesize English text character by character. You will train a vanilla RNN with outputs, as described in
+lecture 9, using the text from the book The Goblet of Fire by J.K. Rowling. The variation of SGD you will use for the optimization will be AdaGrad.
+
+The final version of your code should contain these major components:
+ Preparing Data: Read in the training data, determine the number of unique characters in the text and set up mapping functions - one
+mapping each character to a unique index and another mapping each index to a character.
+
+ Back-propagation: The forward and the backward pass of the back- propagation algorithm for a vanilla RNN to efficiently compute the gradients.
+
+ AdaGrad updating your RNN's parameters.
+
+ Synthesizing text from your RNN: Given a learnt set of parameters for the RNN, a default initial hidden state h0 and an initial input vector, x0, from which 
+to bootstrap from then you will write a function to generate a sequence of text.
