@@ -1,0 +1,10 @@
+In this assignment you will train and test k-layer networks with multiple outputs to classify images (once again) from the CIFAR-10 dataset. You
+will upgrade your code from Assignment 2 in two significant ways:
+1. Generalize your code so that you can train and test k-layer networks.
+2. Incorporate batch normalization into the k-layer network both for training and testing.
+
+The overall structure of your code for this assignment should mimic that from Assignment 2. You will mainly just have to modify the functions that
+implement the forward and backward passes. As in Assignment 2 you will train your network with mini-batch gradient descent and cyclical learning
+rates. Before the explicit instructions for the assignment, we present the mathematical details that you will need to complete the assignment. As in
+the previous assignment we will train our networks by minimizing a cost function, a weighted sum of the cross-entropy loss on the labelled training
+data and an L2 regularization of the weight matrices see equation (20) for the general form, using mini-batch gradient descent.
